@@ -2,51 +2,51 @@ SELECT
     u.UrunAdi,           -- Urunler tablosundan geliyor
     sd.Adet,             -- SiparisDetay tablosundan geliyor
     r.RestoranAdi,       -- Restoranlar tablosundan geliyor
-    -- MusteriID NULL ise 'Gizli Bağışçı' yazar, değilse ad soyad birleştirir
+    -- MusteriID NULL ise 'Gizli BaÃ°Ã½Ã¾Ã§Ã½' yazar, deÃ°ilse ad soyad birleÃ¾tirir
     CASE 
-        WHEN s.MusteriID IS NULL THEN 'Gizli Bağışçı (Hayırsever)'
+        WHEN s.MusteriID IS NULL THEN 'Gizli BaÃ°Ã½Ã¾Ã§Ã½ (HayÃ½rsever)'
         ELSE m.Ad + ' ' + m.Soyad 
     END AS BagisciKimligi
 FROM Siparisler s
--- 1. Sipariş detaylarına gitmek için ara tabloyu bağlıyoruz
+-- 1. SipariÃ¾ detaylarÃ½na gitmek iÃ§in ara tabloyu baÃ°lÃ½yoruz
 INNER JOIN SiparisDetaylari sd ON s.SiparisID = sd.SiparisID
--- 2. Ürün adına ulaşmak için ürünler tablosunu bağlıyoruz
+-- 2. ÃœrÃ¼n adÃ½na ulaÃ¾mak iÃ§in Ã¼rÃ¼nler tablosunu baÃ°lÃ½yoruz
 INNER JOIN Urunler u ON sd.UrunID = u.UrunID
--- 3. Restoran adına ulaşmak için restoranlar tablosunu bağlıyoruz
+-- 3. Restoran adÃ½na ulaÃ¾mak iÃ§in restoranlar tablosunu baÃ°lÃ½yoruz
 INNER JOIN Restoranlar r ON u.RestoranID = r.RestoranID
--- 4. Gizlilik için müşterileri LEFT JOIN ile bağlıyoruz (NULL değerleri kaçırmamak için)
+-- 4. Gizlilik iÃ§in mÃ¼Ã¾terileri LEFT JOIN ile baÃ°lÃ½yoruz (NULL deÃ°erleri kaÃ§Ã½rmamak iÃ§in)
 LEFT JOIN Musteriler m ON s.MusteriID = m.MusteriID
--- 5. Sadece askıdaki (yani henüz bir ihtiyaç sahibi tarafından alınmamış) yemekleri listelemek için filtre:
+-- 5. Sadece askÃ½daki (yani henÃ¼z bir ihtiyaÃ§ sahibi tarafÃ½ndan alÃ½nmamÃ½Ã¾) yemekleri listelemek iÃ§in filtre:
 WHERE s.MusteriID IS NULL;
 
 
 INSERT INTO Siparisler (MusteriID, SiparisTarihi, ToplamTutar, SiparisDurumu)
-VALUES (NULL, GETDATE(), 150.00, 'Hazırlanıyor');
+VALUES (NULL, GETDATE(), 150.00, 'HazÃ½rlanÃ½yor');
 
 INSERT INTO Musteriler (Ad, Soyad, Telefon, Email)
-VALUES ('Gizli', 'Bağışçı (Hayırsever)', '0000000000', 'anonim@sistem.com');
+VALUES ('Gizli', 'BaÃ°Ã½Ã¾Ã§Ã½ (HayÃ½rsever)', '0000000000', 'anonim@sistem.com');
 
--- Buradaki '5' yerine bir önceki adımda oluşan sanal MusteriID'ni yazmalısın.
+-- Buradaki '5' yerine bir Ã¶nceki adÃ½mda oluÃ¾an sanal MusteriID'ni yazmalÃ½sÃ½n.
 INSERT INTO Siparisler (MusteriID, SiparisTarihi, ToplamTutar, SiparisDurumu)
-VALUES (38, GETDATE(), 150.00, 'Hazırlanıyor');
+VALUES (38, GETDATE(), 150.00, 'HazÃ½rlanÃ½yor');
 
-SELECT * FROM Adresler; -- Eğer tablonun adı Adres ise 'Adresler' yerine 'Adres' yaz.
+SELECT * FROM Adresler; -- EÃ°er tablonun adÃ½ Adres ise 'Adresler' yerine 'Adres' yaz.
 
--- NOT: '5' yerine kendi sanal MusteriID'ni, '1' yerine tablodaki gerçek bir AdresID'yi yaz!
+-- NOT: '5' yerine kendi sanal MusteriID'ni, '1' yerine tablodaki gerÃ§ek bir AdresID'yi yaz!
 INSERT INTO Siparisler (MusteriID, AdresID, SiparisTarihi, ToplamTutar, SiparisDurumu)
-VALUES (38, 1, GETDATE(), 150.00, 'Hazırlanıyor');
+VALUES (38, 1, GETDATE(), 150.00, 'HazÃ½rlanÃ½yor');
 
 SELECT * FROM Restoranlar;
 
--- NOT: 5, 1, 1 sayılarını kendi veritabanındaki gerçek ID değerlerine göre güncelleyebilirsin
+-- NOT: 5, 1, 1 sayÃ½larÃ½nÃ½ kendi veritabanÃ½ndaki gerÃ§ek ID deÃ°erlerine gÃ¶re gÃ¼ncelleyebilirsin
 INSERT INTO Siparisler (MusteriID, AdresID, RestoranID, SiparisTarihi, ToplamTutar, SiparisDurumu)
-VALUES (5, 1, 4, GETDATE(), 150.00, 'Hazırlanıyor');
+VALUES (5, 1, 4, GETDATE(), 150.00, 'HazÃ½rlanÃ½yor');
 
--- UrunID olarak Urunler tablondaki geçerli bir ID'yi (Örn: 1) yaz.
+-- UrunID olarak Urunler tablondaki geÃ§erli bir ID'yi (Ã–rn: 1) yaz.
 INSERT INTO SiparisDetaylari (SiparisID, UrunID, Adet)
 VALUES (IDENT_CURRENT('Siparisler'), 1, 2);
 
--- UrunID olarak Urunler tablondaki geçerli bir ID'yi (Örn: 1) yaz.
+-- UrunID olarak Urunler tablondaki geÃ§erli bir ID'yi (Ã–rn: 1) yaz.
 INSERT INTO SiparisDetaylari (SiparisID, UrunID, Adet, BirimFiyat)
 VALUES (IDENT_CURRENT('Siparisler'), 1, 2, 75.00);
 
@@ -54,7 +54,7 @@ VALUES (IDENT_CURRENT('Siparisler'), 1, 2, 75.00);
 SELECT 
     u.UrunAdi,           
     sd.Adet,             
-    sd.BirimFiyat,       -- Detay tablosundaki gerçek fiyat sütunu
+    sd.BirimFiyat,       -- Detay tablosundaki gerÃ§ek fiyat sÃ¼tunu
     r.RestoranAdi,       
     (m.Ad + ' ' + m.Soyad) AS BagisciKimligi
 FROM Siparisler s
@@ -62,7 +62,7 @@ INNER JOIN SiparisDetaylari sd ON s.SiparisID = sd.SiparisID
 INNER JOIN Urunler u ON sd.UrunID = u.UrunID
 INNER JOIN Restoranlar r ON u.RestoranID = r.RestoranID
 INNER JOIN Musteriler m ON s.MusteriID = m.MusteriID
--- NOT: Buradaki 5 sayısını kendi sanal MusteriID'nle değiştirmeyi unutma!
+-- NOT: Buradaki 5 sayÃ½sÃ½nÃ½ kendi sanal MusteriID'nle deÃ°iÃ¾tirmeyi unutma!
 WHERE s.MusteriID = 38;
 
 SELECT * FROM Siparisler WHERE SiparisID = IDENT_CURRENT('Siparisler');
@@ -85,9 +85,9 @@ SELECT
     sd.Adet,             
     sd.BirimFiyat,       
     r.RestoranAdi,       
-    -- Eğer siparişi veren bizim sanal gizli kullanıcıysa maskele, değilse adını yaz:
+    -- EÃ°er sipariÃ¾i veren bizim sanal gizli kullanÃ½cÃ½ysa maskele, deÃ°ilse adÃ½nÃ½ yaz:
     CASE 
-        WHEN s.MusteriID = 38 THEN 'Gizli Bağışçı (Hayırsever)'
+        WHEN s.MusteriID = 38 THEN 'Gizli BaÃ°Ã½Ã¾Ã§Ã½ (HayÃ½rsever)'
         ELSE m.Ad + ' ' + m.Soyad 
     END AS BagisciKimligi
 FROM Siparisler s
@@ -95,63 +95,63 @@ INNER JOIN SiparisDetaylari sd ON s.SiparisID = sd.SiparisID
 INNER JOIN Urunler u ON sd.UrunID = u.UrunID
 INNER JOIN Restoranlar r ON u.RestoranID = r.RestoranID
 INNER JOIN Musteriler m ON s.MusteriID = m.MusteriID
--- KRİTİK FİLTRE: Sadece "Askıda Yemek Noktası" (AdresID = 1) olan bağışları getir!
--- Böylece insanların kendilerine verdiği normal siparişler elenir.
+-- KRÃTÃK FÃLTRE: Sadece "AskÃ½da Yemek NoktasÃ½" (AdresID = 1) olan baÃ°Ã½Ã¾larÃ½ getir!
+-- BÃ¶ylece insanlarÃ½n kendilerine verdiÃ°i normal sipariÃ¾ler elenir.
 WHERE s.AdresID = 1;
 
--- Siparişi sanal kullanıcı (5) üzerinden oluşturuyoruz
+-- SipariÃ¾i sanal kullanÃ½cÃ½ (5) Ã¼zerinden oluÃ¾turuyoruz
 INSERT INTO Siparisler (MusteriID, AdresID, RestoranID, SiparisTarihi, ToplamTutar, SiparisDurumu)
-VALUES (38, 1, 1, GETDATE(), 110.00, 'Hazırlanıyor');
+VALUES (38, 1, 1, GETDATE(), 110.00, 'HazÃ½rlanÃ½yor');
 
--- Sipariş detayını bağla (En son açılan siparişe 1 adet Kuru Fasulye ekleyelim mesela)
+-- SipariÃ¾ detayÃ½nÃ½ baÃ°la (En son aÃ§Ã½lan sipariÃ¾e 1 adet Kuru Fasulye ekleyelim mesela)
 INSERT INTO SiparisDetaylari (SiparisID, UrunID, Adet, BirimFiyat)
 VALUES (IDENT_CURRENT('Siparisler'), 1, 1, 110.00);
 
 -- ====================================================================
--- 1. GİZLİ SİPARİŞ: Diyar Lahmacun'dan 4 Adet Lahmacun
+-- 1. GÃZLÃ SÃPARÃÃ: Diyar Lahmacun'dan 4 Adet Lahmacun
 -- ====================================================================
 INSERT INTO Siparisler (MusteriID, AdresID, RestoranID, SiparisTarihi, ToplamTutar, SiparisDurumu)
-VALUES (38, 1, 1, GETDATE(), 300.00, 'Hazırlanıyor');
+VALUES (38, 1, 1, GETDATE(), 300.00, 'HazÃ½rlanÃ½yor');
 
 INSERT INTO SiparisDetaylari (SiparisID, UrunID, Adet, BirimFiyat)
 VALUES (IDENT_CURRENT('Siparisler'), 6, 4, 75.00);
 
 
 -- ====================================================================
--- 2. GİZLİ SİPARİŞ: Pizza Portofino'dan 2 Adet Kola
+-- 2. GÃZLÃ SÃPARÃÃ: Pizza Portofino'dan 2 Adet Kola
 -- ====================================================================
 INSERT INTO Siparisler (MusteriID, AdresID, RestoranID, SiparisTarihi, ToplamTutar, SiparisDurumu)
-VALUES (38, 1, 1, GETDATE(), 80.00, 'Hazırlanıyor');
+VALUES (38, 1, 1, GETDATE(), 80.00, 'HazÃ½rlanÃ½yor');
 
 INSERT INTO SiparisDetaylari (SiparisID, UrunID, Adet, BirimFiyat)
 VALUES (IDENT_CURRENT('Siparisler'), 2, 2, 40.00);
 
 
 -- ====================================================================
--- 3. GİZLİ SİPARİŞ: Veggie Garden'dan 3 Adet Mantar Sote
+-- 3. GÃZLÃ SÃPARÃÃ: Veggie Garden'dan 3 Adet Mantar Sote
 -- ====================================================================
 INSERT INTO Siparisler (MusteriID, AdresID, RestoranID, SiparisTarihi, ToplamTutar, SiparisDurumu)
-VALUES (38, 1, 1, GETDATE(), 510.00, 'Hazırlanıyor');
+VALUES (38, 1, 1, GETDATE(), 510.00, 'HazÃ½rlanÃ½yor');
 
 INSERT INTO SiparisDetaylari (SiparisID, UrunID, Adet, BirimFiyat)
 VALUES (IDENT_CURRENT('Siparisler'), 5, 3, 170.00);
 
 
 -- ====================================================================
--- 4. GİZLİ SİPARİŞ: Anne Eli Ev Yemekleri'nden 2 Adet Mercimek Çorbası
+-- 4. GÃZLÃ SÃPARÃÃ: Anne Eli Ev Yemekleri'nden 2 Adet Mercimek Ã‡orbasÃ½
 -- ====================================================================
 INSERT INTO Siparisler (MusteriID, AdresID, RestoranID, SiparisTarihi, ToplamTutar, SiparisDurumu)
-VALUES (38, 1, 1, GETDATE(), 140.00, 'Hazırlanıyor');
+VALUES (38, 1, 1, GETDATE(), 140.00, 'HazÃ½rlanÃ½yor');
 
 INSERT INTO SiparisDetaylari (SiparisID, UrunID, Adet, BirimFiyat)
 VALUES (IDENT_CURRENT('Siparisler'), 4, 2, 70.00);
 
 
 -- ====================================================================
--- 5. GİZLİ SİPARİŞ: Diyar Lahmacun'dan 2 Adet Adana Kebap
+-- 5. GÃZLÃ SÃPARÃÃ: Diyar Lahmacun'dan 2 Adet Adana Kebap
 -- ====================================================================
 INSERT INTO Siparisler (MusteriID, AdresID, RestoranID, SiparisTarihi, ToplamTutar, SiparisDurumu)
-VALUES (38, 1, 1, GETDATE(), 500.00, 'Hazırlanıyor');
+VALUES (38, 1, 1, GETDATE(), 500.00, 'HazÃ½rlanÃ½yor');
 
 INSERT INTO SiparisDetaylari (SiparisID, UrunID, Adet, BirimFiyat)
 VALUES (IDENT_CURRENT('Siparisler'), 3, 2, 250.00);
@@ -170,16 +170,7 @@ INNER JOIN SiparisDetaylari sd ON s.SiparisID = sd.SiparisID
 INNER JOIN Urunler u ON sd.UrunID = u.UrunID
 INNER JOIN Restoranlar r ON u.RestoranID = r.RestoranID
 INNER JOIN Musteriler m ON s.MusteriID = m.MusteriID
--- KRİTİK FİLTRE: AdresID'si 1 (Bağış Havuzu) OLMAYAN tüm normal siparişleri getir!
+-- KRÃTÃK FÃLTRE: AdresID'si 1 (BaÃ°Ã½Ã¾ Havuzu) OLMAYAN tÃ¼m normal sipariÃ¾leri getir!
 WHERE s.AdresID <> 1;
 
 
-SELECT TOP 1 * FROM Musteriler;
-
-SELECT TOP 10 
-    dest.text AS [Calistirilan SQL Kodu],
-    deqs.last_execution_time AS [Calistirilma Zamani]
-FROM sys.dm_exec_query_stats AS deqs
-CROSS APPLY sys.dm_exec_sql_text(deqs.sql_handle) AS dest
-WHERE dest.text LIKE '%BagisciKimligi%' -- İçinde bu kelime geçen sorguları filtreler
-ORDER BY deqs.last_execution_time DESC;
