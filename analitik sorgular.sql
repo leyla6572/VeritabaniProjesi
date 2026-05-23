@@ -1,5 +1,5 @@
 
---ürün kategorilerine göre en yüksek ve en düşük üürün yani yemeği listeleyen kod
+--Ã¼rÃ¼n kategorilerine gÃ¶re en yÃ¼ksek ve en dÃ¼ÅŸÃ¼k Ã¼Ã¼rÃ¼n yani yemeÄŸi listeleyen kod
 SELECT 
     Kategori,
     MIN(Fiyat) AS EnDusukFiyat,
@@ -9,7 +9,7 @@ FROM Urunler
 GROUP BY Kategori;
 
 
---her ürün kategorisi için toplam satışı hesaplayan kodu
+--her Ã¼rÃ¼n kategorisi iÃ§in toplam satÄ±ÅŸÄ± hesaplayan kodu
 SELECT 
     u.Kategori,
     COUNT(DISTINCT s.SiparisID) AS ToplamSiparisSayisi,
@@ -18,32 +18,32 @@ SELECT
 FROM Urunler u
 INNER JOIN SiparisDetaylari sd ON u.UrunID = sd.UrunID
 INNER JOIN Siparisler s ON sd.SiparisID = s.SiparisID
-WHERE s.SiparisDurumu = 'Teslim Edildi' -- Sadece başarıyla tamamlanan satışları sayar
+WHERE s.SiparisDurumu = 'Teslim Edildi' -- Sadece baÅŸarÄ±yla tamamlanan satÄ±ÅŸlarÄ± sayar
 GROUP BY u.Kategori
-ORDER BY KategoriToplamCirosu DESC; -- En çok kazandıran kategoriyi en üstte listeler
+ORDER BY KategoriToplamCirosu DESC; -- En Ã§ok kazandÄ±ran kategoriyi en Ã¼stte listeler
 
 
 
---Her ürün için satılan toplam miktarı ve ortalama satış
---miktarını hesaplayan sorgu
+--Her Ã¼rÃ¼n iÃ§in satÄ±lan toplam miktarÄ± ve ortalama satÄ±ÅŸ
+--miktarÄ±nÄ± hesaplayan sorgu
 SELECT 
     u.UrunID,
     u.UrunAdi,
     u.Kategori,
     SUM(sd.Adet) AS ToplamSatilanMiktar,
-    AVG(sd.Adet * 1.0) AS OrtalamaSiparisMiktarı, -- 1.0 ile çarparak küsuratlı (ondalıklı) sonucu garanti ediyoruz
+    AVG(sd.Adet * 1.0) AS OrtalamaSiparisMiktarÄ±, -- 1.0 ile Ã§arparak kÃ¼suratlÄ± (ondalÄ±klÄ±) sonucu garanti ediyoruz
     COUNT(sd.SiparisID) AS BuUrununGectigiToplamSiparisSayisi
 FROM Urunler u
 INNER JOIN SiparisDetaylari sd ON u.UrunID = sd.UrunID
 INNER JOIN Siparisler s ON sd.SiparisID = s.SiparisID
-WHERE s.SiparisDurumu = 'Teslim Edildi' -- Sadece başarıyla tamamlanan siparişleri analize dahil ediyoruz
+WHERE s.SiparisDurumu = 'Teslim Edildi' -- Sadece baÅŸarÄ±yla tamamlanan sipariÅŸleri analize dahil ediyoruz
 GROUP BY u.UrunID, u.UrunAdi, u.Kategori
-ORDER BY ToplamSatilanMiktar DESC; -- En çok satılan üründen en aza doğru sıralar
+ORDER BY ToplamSatilanMiktar DESC; -- En Ã§ok satÄ±lan Ã¼rÃ¼nden en aza doÄŸru sÄ±ralar
 
 
 
---Her ürün kategorisinde en yüksek ve en düşük fiyatlı
---ürünlerin fiyatlarini listeleyen kod
+--Her Ã¼rÃ¼n kategorisinde en yÃ¼ksek ve en dÃ¼ÅŸÃ¼k fiyatlÄ±
+--Ã¼rÃ¼nlerin fiyatlarini listeleyen kod
 SELECT 
     Kategori,
     MIN(Fiyat) AS EnDusukFiyat,
@@ -51,12 +51,12 @@ SELECT
     COUNT(UrunID) AS KategoridekiToplamUrunSayisi
 FROM Urunler
 GROUP BY Kategori
-ORDER BY EnYuksekFiyat DESC; -- En pahalı ürüne sahip kategoriyi en üstte gösterir
+ORDER BY EnYuksekFiyat DESC; -- En pahalÄ± Ã¼rÃ¼ne sahip kategoriyi en Ã¼stte gÃ¶sterir
 
 
 
---Ortalama Sipariş Değerinden Fazlasını Satın Alan
---Müşterileri Elde Edin
+--Ortalama SipariÅŸ DeÄŸerinden FazlasÄ±nÄ± SatÄ±n Alan
+--MÃ¼ÅŸterileri Elde Edin
 SELECT 
     m.MusteriID,
     m.Ad,
@@ -68,35 +68,35 @@ SELECT
     AVG(s.ToplamTutar) AS MusterininKendiSiparisOrtalamasi
 FROM Musteriler m
 INNER JOIN Siparisler s ON m.MusteriID = s.MusteriID
-WHERE s.SiparisDurumu = 'Teslim Edildi' -- Sadece tamamlanan siparişleri sayıyoruz
+WHERE s.SiparisDurumu = 'Teslim Edildi' -- Sadece tamamlanan sipariÅŸleri sayÄ±yoruz
 GROUP BY m.MusteriID, m.Ad, m.Soyad, m.Email, m.Bakiye
 HAVING AVG(s.ToplamTutar) > (
-    -- Alt Sorgu (Subquery): Tüm sistemin genel sipariş ortalamasını hesaplar
+    -- Alt Sorgu (Subquery): TÃ¼m sistemin genel sipariÅŸ ortalamasÄ±nÄ± hesaplar
     SELECT AVG(ToplamTutar) 
     FROM Siparisler 
     WHERE SiparisDurumu = 'Teslim Edildi'
 )
-ORDER BY MusterininKendiSiparisOrtalamasi DESC; -- En çok harcayan müşteriyi en üstte listeler
+ORDER BY MusterininKendiSiparisOrtalamasi DESC; -- En Ã§ok harcayan mÃ¼ÅŸteriyi en Ã¼stte listeler
 
 
---En Çok Ürünü Satın Alan İlk 3 Müşteriyi Bul
+--En Ã‡ok ÃœrÃ¼nÃ¼ SatÄ±n Alan Ä°lk 3 MÃ¼ÅŸteriyi Bul
 SELECT TOP 3
     m.MusteriID,
     m.Ad,
     m.Soyad,
     m.Email,
-    SUM(sd.Adet) AS ToplamSatınAlınanPorsiyonAdedi,
-    COUNT(DISTINCT s.SiparisID) AS ToplamVerdiğiSiparişSayısı,
-    SUM(s.ToplamTutar) AS ToplamHarcamaTutarı
+    SUM(sd.Adet) AS ToplamSatÄ±nAlÄ±nanPorsiyonAdedi,
+    COUNT(DISTINCT s.SiparisID) AS ToplamVerdiÄŸiSipariÅŸSayÄ±sÄ±,
+    SUM(s.ToplamTutar) AS ToplamHarcamaTutarÄ±
 FROM Musteriler m
 INNER JOIN Siparisler s ON m.MusteriID = s.MusteriID
 INNER JOIN SiparisDetaylari sd ON s.SiparisID = sd.SiparisID
-WHERE s.SiparisDurumu = 'Teslim Edildi' -- Sadece başarıyla tamamlanan siparişleri sayar
+WHERE s.SiparisDurumu = 'Teslim Edildi' -- Sadece baÅŸarÄ±yla tamamlanan sipariÅŸleri sayar
 GROUP BY m.MusteriID, m.Ad, m.Soyad, m.Email
-ORDER BY ToplamSatınAlınanPorsiyonAdedi DESC; -- En çok ürün tüketen kişiyi en üstte listeler
+ORDER BY ToplamSatÄ±nAlÄ±nanPorsiyonAdedi DESC; -- En Ã§ok Ã¼rÃ¼n tÃ¼keten kiÅŸiyi en Ã¼stte listeler
 
 
---tüm kuryeleri teslim ettiği sipariş sayısına göre azdan çoğa doğru sıralayan kod
+--tÃ¼m kuryeleri teslim ettiÄŸi sipariÅŸ sayÄ±sÄ±na gÃ¶re azdan Ã§oÄŸa doÄŸru sÄ±ralayan kod
 SELECT 
     k.KuryeID,
     k.Ad,
@@ -107,10 +107,10 @@ SELECT
 FROM Kuryeler k
 LEFT JOIN Siparisler s ON k.KuryeID = s.KuryeID AND s.SiparisDurumu = 'Teslim Edildi' --0 teslimat yapan kurye varsa da getiriyoruz.
 GROUP BY k.KuryeID, k.Ad, k.Soyad, k.Telefon, k.Durum
-ORDER BY ToplamTeslimEttigiSiparisSayisi ASC; -- En az sipariş teslim edenden en çok teslim edene doğru sıralar
+ORDER BY ToplamTeslimEttigiSiparisSayisi ASC; -- En az sipariÅŸ teslim edenden en Ã§ok teslim edene doÄŸru sÄ±ralar
 
 
---Son 2 Yılda Hiçbir Şey Satın Almamış Müşterileriler kimler?
+--Son 2 YÄ±lda HiÃ§bir Åey SatÄ±n AlmamÄ±ÅŸ MÃ¼ÅŸterileriler kimler?
 SELECT 
     m.MusteriID,
     m.Ad,
@@ -120,18 +120,18 @@ SELECT
     m.KayitTarihi
 FROM Musteriler m
 WHERE NOT EXISTS (
-    -- Alt Sorgu: Müşterinin son 2 yıl içinde verdiği başarılı bir sipariş var mı diye bakar
+    -- Alt Sorgu: MÃ¼ÅŸterinin son 2 yÄ±l iÃ§inde verdiÄŸi baÅŸarÄ±lÄ± bir sipariÅŸ var mÄ± diye bakar
     SELECT 1 
     FROM Siparisler s
     WHERE s.MusteriID = m.MusteriID
       AND s.SiparisDurumu = 'Teslim Edildi'
-      AND s.SiparisTarihi >= DATEADD(YEAR, -2, GETDATE()) -- Günümüzden tam 2 yıl öncesine kadar olan süreç
+      AND s.SiparisTarihi >= DATEADD(YEAR, -2, GETDATE()) -- GÃ¼nÃ¼mÃ¼zden tam 2 yÄ±l Ã¶ncesine kadar olan sÃ¼reÃ§
 )
-ORDER BY m.KayitTarihi ASC; -- En eski üyelerden başlayarak sıralar
+ORDER BY m.KayitTarihi ASC; -- En eski Ã¼yelerden baÅŸlayarak sÄ±ralar
 
 
 
---hiç sipariş edilmemiş ürünler
+--hiÃ§ sipariÅŸ edilmemiÅŸ Ã¼rÃ¼nler
 SELECT 
     u.UrunID,
     u.UrunAdi,
@@ -139,11 +139,87 @@ SELECT
     u.Fiyat
 FROM Urunler u
 WHERE NOT EXISTS (
-    -- Alt Sorgu (Subquery): Bu ürünün satış geçmişi var mı diye bakar
+    -- Alt Sorgu (Subquery): Bu Ã¼rÃ¼nÃ¼n satÄ±ÅŸ geÃ§miÅŸi var mÄ± diye bakar
     SELECT 1 
     FROM SiparisDetaylari sd
     INNER JOIN Siparisler s ON sd.SiparisID = s.SiparisID
     WHERE sd.UrunID = u.UrunID
-      AND s.SiparisDurumu = 'Teslim Edildi' -- İptal edilen siparişleri satış saymıyoruz
+      AND s.SiparisDurumu = 'Teslim Edildi' -- Ä°ptal edilen sipariÅŸleri satÄ±ÅŸ saymÄ±yoruz
 )
 ORDER BY u.Kategori, u.UrunAdi;
+
+
+
+
+--2026 da verilen sipariÅŸler sorgusu
+SELECT 
+    s.SiparisID,
+    s.SiparisTarihi,
+    s.ToplamTutar,
+    s.SiparisDurumu,
+    m.Ad + ' ' + m.Soyad AS MusteriAdSoyad,
+    r.RestoranAdi
+FROM Siparisler s
+INNER JOIN Musteriler m ON s.MusteriID = m.MusteriID
+INNER JOIN Restoranlar r ON s.RestoranID = r.RestoranID
+WHERE YEAR(s.SiparisTarihi) = 2026
+  AND s.SiparisDurumu = 'Teslim Edildi' -- Ä°ptal edilen veya yolda olanlarÄ± eliyoruz
+ORDER BY s.SiparisTarihi ASC; -- Kronolojik olarak eskiden yeniye doÄŸru sÄ±ralar
+
+
+
+--TÃ¼m Ã¼rÃ¼n kategorilerinden en az bir kez alÄ±ÅŸveriÅŸ
+--yapmÄ±ÅŸ mÃ¼ÅŸterileri belirlemek istiyoruz.
+SELECT 
+    m.MusteriID,
+    m.Ad,
+    m.Soyad,
+    m.Email,
+    COUNT(DISTINCT u.Kategori) AS DeneyimlendigiKategoriSayisi
+FROM Musteriler m
+INNER JOIN Siparisler s ON m.MusteriID = s.MusteriID
+INNER JOIN SiparisDetaylari sd ON s.SiparisID = sd.SiparisID
+INNER JOIN Urunler u ON sd.UrunID = u.UrunID
+WHERE s.SiparisDurumu = 'Teslim Edildi' -- Sadece baÅŸarÄ±lÄ± sipariÅŸleri sayÄ±yoruz
+GROUP BY m.MusteriID, m.Ad, m.Soyad, m.Email
+HAVING COUNT(DISTINCT u.Kategori) = (
+    -- Alt Sorgu: Sistemde toplam kaÃ§ farklÄ± Ã¼rÃ¼n kategorisi olduÄŸunu dinamik olarak bulur
+    SELECT COUNT(DISTINCT Kategori) 
+    FROM Urunler
+);
+
+
+
+--VeritabanÄ±ndaki hiÃ§bir sipariÅŸte yer almamÄ±ÅŸ Ã¼rÃ¼nlerin adlarÄ±nÄ± ve kategorilerini listelemek istiyoruz.
+--Boylelikle, stokta fazla bekleyen veya satÄ±lmayan Ã¼rÃ¼nleri tespit edebiliriz.
+SELECT 
+    u.UrunAdi,
+    u.Kategori,
+    u.Fiyat,
+    u.StokDurumu
+FROM Urunler u
+WHERE NOT EXISTS (
+    -- Alt Sorgu (Subquery): Bu Ã¼rÃ¼nÃ¼n sipariÅŸ detaylarÄ±nda herhangi bir kaydÄ± var mÄ±?
+    SELECT 1 
+    FROM SiparisDetaylari sd
+    INNER JOIN Siparisler s ON sd.SiparisID = s.SiparisID
+    WHERE sd.UrunID = u.UrunID
+      AND s.SiparisDurumu = 'Teslim Edildi' -- Ä°ptal edilen sipariÅŸleri satÄ±ÅŸtan saymÄ±yoruz
+)
+ORDER BY u.Kategori, u.UrunAdi;
+
+
+
+
+--Her sipariÅŸin Ã¼rÃ¼n kimlikleri ve sipariÅŸ miktarlarÄ±nÄ± tek bir
+--sorguda listelemek istiyoruz.
+SELECT 
+    s.SiparisID,
+    s.SiparisTarihi,
+    sd.UrunID,
+    sd.Adet AS SiparisMiktari,
+    sd.BirimFiyat AS SatisAnindakiFiyat
+FROM Siparisler s
+INNER JOIN SiparisDetaylari sd ON s.SiparisID = sd.SiparisID
+WHERE s.SiparisDurumu = 'Teslim Edildi' -- Sadece baÅŸarÄ±yla tamamlanan sipariÅŸleri listeler
+ORDER BY s.SiparisID ASC, sd.UrunID ASC; -- Ã–nce sipariÅŸ numarasÄ±na, sonra Ã¼rÃ¼n kimliÄŸine gÃ¶re sÄ±ralar
